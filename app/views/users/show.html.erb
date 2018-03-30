@@ -7,5 +7,39 @@
         <%= @user.name %>
       </h1>
     </section>
+    <section>
+      <%= render 'shared/stats' %>
+    </section>
   </aside>
+  <div class="col-md-8">
+    <% if @user.microposts.any? %>
+    <h3>投稿 (<%= @user.microposts.count %>)</h3>
+    <%= render 'follow_form' if signed_in? %>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover table-striped">
+        <tr>
+          <th>ID</th>
+          <th>ツイート</th>
+          <th>ツイート日時</th>
+          <th>削除</th>
+        </tr>
+        <% @microposts.each do |micropost| %>
+        <tr>
+          <td><%= micropost.id %></td>
+          <td><%= micropost.content %></td>
+          <td><%= time_ago_in_words(micropost.created_at) %>前</td>
+          <td>
+            <% if current_user == micropost.user %>
+              <%= link_to "delete", micropost, method: :delete, class: "btn btn-danger fa fa-trash-o" %>
+            <% else %>
+              <%= link_to "delete", micropost, method: :delete, class: "btn btn-danger fa fa-trash-o", disabled: "disabled"%>
+            <% end %>
+          </td>
+        </tr>
+        <% end %>
+      </table>
+    </div>
+    <%= will_paginate @microposts, renderer: BootstrapPagination::Rails, previous_label: '前', next_label: '次' %>
+    <% end %>
+  </div>
 </div>

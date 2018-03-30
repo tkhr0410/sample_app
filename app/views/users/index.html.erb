@@ -1,10 +1,38 @@
 <% provide(:title, 'All users') %>
-<h1>All users</h1>
+<h1>ユーザー 一覧</h1>
 
-<%= will_paginate renderer: BootstrapPagination::Rails %>
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <tr>
+                <th>ID</th>
+                <th>画像</th>
+                <th>氏名</th>
+                <th>メールアドレス</th>
+                <th>登録日時</th>
+                <th>更新日時</th>
+                <th>リンク</th>
+            </tr>
+            <% @users.each do |user| %>
+                <tr>
+                    <td><%= user.id %></td>
+                    <td><%= gravatar_for user, size: 52 %></td>
+                    <td><%= user.name %></td>
+                    <td><%= mail_to user.email %></td>
+                    <td><%=l user.created_at,  :format => "%Y年%m月%d日 %H時%M分" %></td>
+                    <td><%=l user.updated_at,  :format => "%Y年%m月%d日 %H時%M分" %></td>
+                    <td>
+                        <%= link_to sanitize('<i class="fa fa-search"></i>'), user, class: "btn btn-default" %>
+                        <% if current_user.admin? && !(current_user == user) %>
+                            <%= link_to sanitize('<i class="fa fa-trash-o"></i>'), user, method: :delete, class: "btn btn-danger", data: { confirm: "削除しますか？" } %>
+                        <% else %>    
+                            <%= link_to sanitize('<i class="fa fa-trash-o"></i>'), "", class: "btn btn-danger", disabled: "disabled"  %>
+                        <% end %>
+                    </td>
+                </tr>
+            <% end %>
+        </table>
+    </div>
+</div>
 
-<ul class="users">
-  <%= render @users %>
-</ul>
-
-<%= will_paginate renderer: BootstrapPagination::Rails %>
+<%= will_paginate @users, renderer: BootstrapPagination::Rails, previous_label: '前', next_label: '次' %>
